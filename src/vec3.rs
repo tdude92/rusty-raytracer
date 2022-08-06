@@ -34,6 +34,24 @@ impl Vec3 {
     pub fn length_squared(&self) -> f64 {
         self.e[0]*self.e[0] + self.e[1]*self.e[1] + self.e[2]*self.e[2]
     }
+
+    pub fn unit_vector(&self) -> Self {
+        self / self.length()
+    }
+
+    pub fn dot(v1: &Self, v2: &Self) -> f64 {
+        v1.e[0]*v2.e[0] + v1.e[1]*v2.e[1] + v1.e[2]*v2.e[2]
+    }
+
+    pub fn cross(v1: &Self, v2: &Self) -> Vec3 {
+        Vec3 {
+            e: [
+                v1.e[1]*v2.e[2] - v1.e[2]*v2.e[1],
+                v1.e[2]*v2.e[0] - v1.e[0]*v2.e[2],
+                v1.e[0]*v2.e[1] - v1.e[1]*v2.e[0],
+            ]
+        }
+    }
 }
 
 impl ops::Index<usize> for Vec3 {
@@ -254,7 +272,7 @@ unary_op!(Neg neg -);
 
 #[cfg(test)]
 mod tests {
-    use approx::ulps_eq;
+    use approx::assert_ulps_eq;
     use super::*;
 
     #[test]
@@ -276,11 +294,39 @@ mod tests {
     }
 
     #[test]
-    fn test_length_functions() {
+    fn test_length_methods() {
         let v = Vec3 {e: [3.0, 4.0, 12.0]};
 
-        assert!(ulps_eq!(v.length_squared(), 169.0));
-        assert!(ulps_eq!(v.length(), 13.0));
+        assert_ulps_eq!(v.length_squared(), 169.0);
+        assert_ulps_eq!(v.length(), 13.0);
+    }
+
+    #[test]
+    fn test_unit_vector_method() {
+        let v = Vec3 {e: [1.0, 1.0, 1.0]};
+        let u = v.unit_vector();
+
+        assert_ulps_eq!(u.x(), 0.5773502691896258);
+        assert_ulps_eq!(u.y(), 0.5773502691896258);
+        assert_ulps_eq!(u.z(), 0.5773502691896258);
+    }
+    #[test]
+    fn test_dot() {
+        let v1 = Vec3 {e: [ 2.0, 0.0, 0.0]};
+        let v2 = Vec3 {e: [-3.0, 0.0, 0.0]};
+
+        assert_ulps_eq!(Vec3::dot(&v1, &v2), -6.0)
+    }
+
+    #[test]
+    fn test_cross() {
+        let v1 = Vec3 {e: [3.0, 0.0, 0.0]};
+        let v2 = Vec3 {e: [0.0, 2.0, 0.0]};
+        let v_out = Vec3::cross(&v1, &v2);
+
+        assert_ulps_eq!(v_out.x(), 0.0);
+        assert_ulps_eq!(v_out.y(), 0.0);
+        assert_ulps_eq!(v_out.z(), 6.0);
     }
 
     mod ops {
@@ -290,19 +336,19 @@ mod tests {
         fn test_neg() {
             // Ref
             let v = Vec3 {e: [1.0, 2.0, 3.0]};
-            assert!(ulps_eq!((-&v).x(), -1.0));
-            assert!(ulps_eq!((-&v).y(), -2.0));
-            assert!(ulps_eq!((-&v).z(), -3.0));
+            assert_ulps_eq!((-&v).x(), -1.0);
+            assert_ulps_eq!((-&v).y(), -2.0);
+            assert_ulps_eq!((-&v).z(), -3.0);
 
             // Value
             let v = Vec3 {e: [1.0, 2.0, 3.0]};
-            assert!(ulps_eq!((-v).x(), -1.0));
+            assert_ulps_eq!((-v).x(), -1.0);
 
             let v = Vec3 {e: [1.0, 2.0, 3.0]};
-            assert!(ulps_eq!((-v).y(), -2.0));
+            assert_ulps_eq!((-v).y(), -2.0);
 
             let v = Vec3 {e: [1.0, 2.0, 3.0]};
-            assert!(ulps_eq!((-v).z(), -3.0));
+            assert_ulps_eq!((-v).z(), -3.0);
         }
 
         #[test]
@@ -375,44 +421,44 @@ mod tests {
             /* UNARY */
             // Ref
             let v = Vec3 {e: [1.0, 2.0, 3.0]};
-            assert!(ulps_eq!((-&v).x(), -1.0));
-            assert!(ulps_eq!((-&v).y(), -2.0));
-            assert!(ulps_eq!((-&v).z(), -3.0));
+            assert_ulps_eq!((-&v).x(), -1.0);
+            assert_ulps_eq!((-&v).y(), -2.0);
+            assert_ulps_eq!((-&v).z(), -3.0);
 
             // Value
             let v = Vec3 {e: [1.0, 2.0, 3.0]};
-            assert!(ulps_eq!((-v).x(), -1.0));
+            assert_ulps_eq!((-v).x(), -1.0);
 
             let v = Vec3 {e: [1.0, 2.0, 3.0]};
-            assert!(ulps_eq!((-v).y(), -2.0));
+            assert_ulps_eq!((-v).y(), -2.0);
 
             let v = Vec3 {e: [1.0, 2.0, 3.0]};
-            assert!(ulps_eq!((-v).z(), -3.0));
+            assert_ulps_eq!((-v).z(), -3.0);
 
             /* ASSIGNMENT */
             // Ref
             let mut v1 = Vec3 {e: [1.0, 2.0, 3.0]};
             let v2 = Vec3 {e: [1.0, 2.0, 3.0]};
             v1 += &v2;
-            assert!(ulps_eq!(v1.x(), 2.0));
-            assert!(ulps_eq!(v1.y(), 4.0));
-            assert!(ulps_eq!(v1.z(), 6.0));
+            assert_ulps_eq!(v1.x(), 2.0);
+            assert_ulps_eq!(v1.y(), 4.0);
+            assert_ulps_eq!(v1.z(), 6.0);
 
             // Value
             let mut v1 = Vec3 {e: [1.0, 2.0, 3.0]};
             let v2 = Vec3 {e: [1.0, 2.0, 3.0]};
             v1 += v2;
-            assert!(ulps_eq!(v1.x(), 2.0));
-            assert!(ulps_eq!(v1.y(), 4.0));
-            assert!(ulps_eq!(v1.z(), 6.0));
+            assert_ulps_eq!(v1.x(), 2.0);
+            assert_ulps_eq!(v1.y(), 4.0);
+            assert_ulps_eq!(v1.z(), 6.0);
 
             // Scalar
             let mut v = Vec3 {e: [1.0, 2.0, 3.0]};
             let s = 2.0;
             v += s;
-            assert!(ulps_eq!(v.x(), 3.0));
-            assert!(ulps_eq!(v.y(), 4.0));
-            assert!(ulps_eq!(v.z(), 5.0));
+            assert_ulps_eq!(v.x(), 3.0);
+            assert_ulps_eq!(v.y(), 4.0);
+            assert_ulps_eq!(v.z(), 5.0);
         }
 
         #[test]
@@ -429,9 +475,9 @@ mod tests {
             let mut v1 = Vec3 {e: [1.0, 2.0, 3.0]};
             let v2 = Vec3 {e: [1.0, 2.0, 3.0]};
             v1 += v2;
-            assert!(ulps_eq!(v1.x(), 2.0));
-            assert!(ulps_eq!(v1.y(), 4.0));
-            assert!(ulps_eq!(v1.z(), 6.0));
+            assert_ulps_eq!(v1.x(), 2.0);
+            assert_ulps_eq!(v1.y(), 4.0);
+            assert_ulps_eq!(v1.z(), 6.0);
         }
 
         #[test]
@@ -448,9 +494,9 @@ mod tests {
             let mut v1 = Vec3 {e: [1.0, 2.0, 3.0]};
             let v2 = Vec3 {e: [1.0, 2.0, 3.0]};
             v1 -= v2;
-            assert!(ulps_eq!(v1.x(), 0.0));
-            assert!(ulps_eq!(v1.y(), 0.0));
-            assert!(ulps_eq!(v1.z(), 0.0));
+            assert_ulps_eq!(v1.x(), 0.0);
+            assert_ulps_eq!(v1.y(), 0.0);
+            assert_ulps_eq!(v1.z(), 0.0);
         }
 
         #[test]
@@ -467,9 +513,9 @@ mod tests {
             let mut v1 = Vec3 {e: [1.0, 2.0, 3.0]};
             let v2 = Vec3 {e: [1.0, 2.0, 3.0]};
             v1 *= v2;
-            assert!(ulps_eq!(v1.x(), 1.0));
-            assert!(ulps_eq!(v1.y(), 4.0));
-            assert!(ulps_eq!(v1.z(), 9.0));
+            assert_ulps_eq!(v1.x(), 1.0);
+            assert_ulps_eq!(v1.y(), 4.0);
+            assert_ulps_eq!(v1.z(), 9.0);
         }
 
         #[test]
@@ -486,22 +532,22 @@ mod tests {
             let mut v1 = Vec3 {e: [1.0, 2.0, 3.0]};
             let v2 = Vec3 {e: [1.0, 2.0, 3.0]};
             v1 /= v2;
-            assert!(ulps_eq!(v1.x(), 1.0));
-            assert!(ulps_eq!(v1.y(), 1.0));
-            assert!(ulps_eq!(v1.z(), 1.0));
+            assert_ulps_eq!(v1.x(), 1.0);
+            assert_ulps_eq!(v1.y(), 1.0);
+            assert_ulps_eq!(v1.z(), 1.0);
         }
 
         #[test]
         fn test_index() {
             let v = Vec3 {e: [1.0, 2.0, 3.0]};
-            assert!(ulps_eq!(v[0], 1.0));
-            assert!(ulps_eq!(v[1], 2.0));
-            assert!(ulps_eq!(v[2], 3.0));
+            assert_ulps_eq!(v[0], 1.0);
+            assert_ulps_eq!(v[1], 2.0);
+            assert_ulps_eq!(v[2], 3.0);
 
             let v = &v;
-            assert!(ulps_eq!(v[0], 1.0));
-            assert!(ulps_eq!(v[1], 2.0));
-            assert!(ulps_eq!(v[2], 3.0));
+            assert_ulps_eq!(v[0], 1.0);
+            assert_ulps_eq!(v[1], 2.0);
+            assert_ulps_eq!(v[2], 3.0);
         }
     }
 }
