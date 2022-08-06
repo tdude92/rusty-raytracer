@@ -62,7 +62,7 @@ impl ops::Index<usize> for Vec3 {
 }
 
 // Implements a binary operation on any combination of
-// Vec3, &Vec3, and f64
+// operand types Vec3, &Vec3, and f64
 macro_rules! binary_op {
     ($Operation:ident $op_fn:ident $op_sym:tt) => {
         // Vec3, Vec3
@@ -352,6 +352,10 @@ mod tests {
 
         #[test]
         fn test_op_macro_combinations() {
+            // We assume that if the macros correctly generate
+            // impls for all combinations of Vec3, &Vec, and f64, for
+            // one operation then it will do so for all operations.
+
             /* BINARY */
             // Ref, Ref
             let v1 = Vec3 {e: [1.0, 2.0, 3.0]};
