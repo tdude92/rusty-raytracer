@@ -1,9 +1,8 @@
 use std::ops;
 
 pub type Point3 = Vec3;
-pub type Color  = Vec3;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Vec3 {
     e: [f64; 3],
 }
@@ -12,6 +11,24 @@ impl Vec3 {
     pub fn new(x: f64, y: f64, z: f64) -> Self {
         Vec3 {
             e: [x, y, z]
+        }
+    }
+
+    pub fn unit_vector(&self) -> Self {
+        self / self.length()
+    }
+
+    pub fn dot(v1: &Self, v2: &Self) -> f64 {
+        v1.e[0]*v2.e[0] + v1.e[1]*v2.e[1] + v1.e[2]*v2.e[2]
+    }
+
+    pub fn cross(v1: &Self, v2: &Self) -> Vec3 {
+        Vec3 {
+            e: [
+                v1.e[1]*v2.e[2] - v1.e[2]*v2.e[1],
+                v1.e[2]*v2.e[0] - v1.e[0]*v2.e[2],
+                v1.e[0]*v2.e[1] - v1.e[1]*v2.e[0],
+            ]
         }
     }
 
@@ -33,24 +50,6 @@ impl Vec3 {
 
     pub fn length_squared(&self) -> f64 {
         self.e[0]*self.e[0] + self.e[1]*self.e[1] + self.e[2]*self.e[2]
-    }
-
-    pub fn unit_vector(&self) -> Self {
-        self / self.length()
-    }
-
-    pub fn dot(v1: &Self, v2: &Self) -> f64 {
-        v1.e[0]*v2.e[0] + v1.e[1]*v2.e[1] + v1.e[2]*v2.e[2]
-    }
-
-    pub fn cross(v1: &Self, v2: &Self) -> Vec3 {
-        Vec3 {
-            e: [
-                v1.e[1]*v2.e[2] - v1.e[2]*v2.e[1],
-                v1.e[2]*v2.e[0] - v1.e[0]*v2.e[2],
-                v1.e[0]*v2.e[1] - v1.e[1]*v2.e[0],
-            ]
-        }
     }
 }
 
