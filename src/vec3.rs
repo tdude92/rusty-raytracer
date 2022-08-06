@@ -391,10 +391,28 @@ mod tests {
 
             /* ASSIGNMENT */
             // Ref
+            let mut v1 = Vec3 {e: [1.0, 2.0, 3.0]};
+            let v2 = Vec3 {e: [1.0, 2.0, 3.0]};
+            v1 += &v2;
+            assert!(ulps_eq!(v1.x(), 2.0));
+            assert!(ulps_eq!(v1.y(), 4.0));
+            assert!(ulps_eq!(v1.z(), 6.0));
 
             // Value
+            let mut v1 = Vec3 {e: [1.0, 2.0, 3.0]};
+            let v2 = Vec3 {e: [1.0, 2.0, 3.0]};
+            v1 += v2;
+            assert!(ulps_eq!(v1.x(), 2.0));
+            assert!(ulps_eq!(v1.y(), 4.0));
+            assert!(ulps_eq!(v1.z(), 6.0));
 
             // Scalar
+            let mut v = Vec3 {e: [1.0, 2.0, 3.0]};
+            let s = 2.0;
+            v += s;
+            assert!(ulps_eq!(v.x(), 3.0));
+            assert!(ulps_eq!(v.y(), 4.0));
+            assert!(ulps_eq!(v.z(), 5.0));
         }
 
         #[test]
