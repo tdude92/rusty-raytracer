@@ -36,46 +36,6 @@ impl Vec3 {
     }
 }
 
-impl ops::Neg for Vec3 {
-    type Output = Self;
-
-    fn neg(self) -> Self::Output {
-        Vec3::new(-self.e[0], -self.e[1], -self.e[2])
-    }
-}
-
-impl ops::AddAssign for Vec3 {
-    fn add_assign(&mut self, other: Self) {
-        self.e[0] += other.e[0];
-        self.e[1] += other.e[1];
-        self.e[2] += other.e[2];
-    }
-}
-
-impl ops::SubAssign for Vec3 {
-    fn sub_assign(&mut self, other: Self) {
-        self.e[0] -= other.e[0];
-        self.e[1] -= other.e[1];
-        self.e[2] -= other.e[2];
-    }
-}
-
-impl ops::MulAssign<f64> for Vec3 {
-    fn mul_assign(&mut self, other: f64) {
-        self.e[0] *= other;
-        self.e[1] *= other;
-        self.e[2] *= other;
-    }
-}
-
-impl ops::DivAssign<f64> for Vec3 {
-    fn div_assign(&mut self, other: f64) {
-        self.e[0] /= other;
-        self.e[1] /= other;
-        self.e[2] /= other;
-    }
-}
-
 impl ops::Index<usize> for Vec3 {
     type Output = f64;
 
@@ -83,6 +43,214 @@ impl ops::Index<usize> for Vec3 {
         &self.e[index]
     }
 }
+
+// Implements a binary operation on any combination of
+// Vec3, &Vec3, and f64
+macro_rules! binary_op {
+    ($Operation:ident $op_fn:ident $op_sym:tt) => {
+        // Vec3, Vec3
+        impl ops::$Operation<Vec3> for Vec3 {
+            type Output = Vec3;
+
+            fn $op_fn(self, other: Vec3) -> Vec3 {
+                Vec3 {
+                    e: [
+                        self.e[0] $op_sym other.e[0],
+                        self.e[1] $op_sym other.e[1],
+                        self.e[2] $op_sym other.e[2],
+                    ]
+                }
+            }
+        }
+
+        // &Vec3, &Vec3
+        impl<'a, 'b> ops::$Operation<&'a Vec3> for &'b Vec3 {
+            type Output = Vec3;
+
+            fn $op_fn(self, other: &'a Vec3) -> Vec3 {
+                Vec3 {
+                    e: [
+                        self.e[0] $op_sym other.e[0],
+                        self.e[1] $op_sym other.e[1],
+                        self.e[2] $op_sym other.e[2],
+                    ]
+                }
+            }
+        }
+
+        // &Vec3, Vec3
+        impl<'a> ops::$Operation<Vec3> for &'a Vec3 {
+            type Output = Vec3;
+
+            fn $op_fn(self, other: Vec3) -> Vec3 {
+                Vec3 {
+                    e: [
+                        self.e[0] $op_sym other.e[0],
+                        self.e[1] $op_sym other.e[1],
+                        self.e[2] $op_sym other.e[2],
+                    ]
+                }
+            }
+        }
+
+        // Vec3, &Vec3
+        impl<'a> ops::$Operation<&'a Vec3> for Vec3 {
+            type Output = Vec3;
+
+            fn $op_fn(self, other: &'a Vec3) -> Vec3 {
+                Vec3 {
+                    e: [
+                        self.e[0] $op_sym other.e[0],
+                        self.e[1] $op_sym other.e[1],
+                        self.e[2] $op_sym other.e[2],
+                    ]
+                }
+            }
+        }
+
+        // Vec3, f64
+        impl ops::$Operation<f64> for Vec3 {
+            type Output = Vec3;
+
+            fn $op_fn(self, other: f64) -> Vec3 {
+                Vec3 {
+                    e: [
+                        self.e[0] $op_sym other,
+                        self.e[1] $op_sym other,
+                        self.e[2] $op_sym other,
+                    ]
+                }
+            }
+        }
+
+        // &Vec3, f64
+        impl<'a> ops::$Operation<f64> for &'a Vec3 {
+            type Output = Vec3;
+
+            fn $op_fn(self, other: f64) -> Vec3 {
+                Vec3 {
+                    e: [
+                        self.e[0] $op_sym other,
+                        self.e[1] $op_sym other,
+                        self.e[2] $op_sym other,
+                    ]
+                }
+            }
+        }
+
+        // f64, Vec3
+        impl ops::$Operation<Vec3> for f64 {
+            type Output = Vec3;
+
+            fn $op_fn(self, other: Vec3) -> Vec3 {
+                Vec3 {
+                    e: [
+                        self $op_sym other.e[0],
+                        self $op_sym other.e[1],
+                        self $op_sym other.e[2],
+                    ]
+                }
+            }
+        }
+
+        // f64, &Vec3
+        impl<'a> ops::$Operation<&'a Vec3> for f64 {
+            type Output = Vec3;
+
+            fn $op_fn(self, other: &'a Vec3) -> Vec3 {
+                Vec3 {
+                    e: [
+                        self $op_sym other.e[0],
+                        self $op_sym other.e[1],
+                        self $op_sym other.e[2],
+                    ]
+                }
+            }
+        }
+    }
+}
+
+// Implements a unary operation for both Vec3 and &Vec3
+macro_rules! unary_op {
+    ($Operation:ident $op_fn:ident $op_sym:tt) => {
+        // Vec3
+        impl ops::$Operation for Vec3 {
+            type Output = Vec3;
+
+            fn $op_fn(self) -> Vec3 {
+                Vec3 {
+                    e: [
+                        $op_sym self.e[0],
+                        $op_sym self.e[1],
+                        $op_sym self.e[2],
+                    ]
+                }
+            }
+        }
+
+        // &Vec3
+        impl<'a> ops::$Operation for &'a Vec3 {
+            type Output = Vec3;
+
+            fn $op_fn(self) -> Vec3 {
+                Vec3 {
+                    e: [
+                        $op_sym self.e[0],
+                        $op_sym self.e[1],
+                        $op_sym self.e[2],
+                    ]
+                }
+            }
+        }
+    }
+}
+
+// Implement add assign operators like +=
+// The first operand is always &mut Vec3 while the second can be Vec3, &Vec3, or f64
+macro_rules! assignment_op {
+    ($Operation:ident $op_fn:ident $op_sym:tt) => {
+        // Vec3
+        impl ops::$Operation<Vec3> for Vec3 {
+            fn $op_fn(&mut self, other: Vec3) {
+                self.e[0] $op_sym other.e[0];
+                self.e[1] $op_sym other.e[1];
+                self.e[2] $op_sym other.e[2];
+            }
+        }
+
+        // &Vec3
+        impl<'a> ops::$Operation<&'a Vec3> for Vec3 {
+            fn $op_fn(&mut self, other: &'a Vec3) {
+                self.e[0] $op_sym other.e[0];
+                self.e[1] $op_sym other.e[1];
+                self.e[2] $op_sym other.e[2];
+            }
+        }
+
+        // f64
+        impl ops::$Operation<f64> for Vec3 {
+            fn $op_fn(&mut self, other: f64) {
+                self.e[0] $op_sym other;
+                self.e[1] $op_sym other;
+                self.e[2] $op_sym other;
+            }
+        }
+    }
+}
+
+binary_op!(Add add +);
+assignment_op!(AddAssign add_assign +=);
+
+binary_op!(Sub sub -);
+assignment_op!(SubAssign sub_assign -=);
+
+binary_op!(Mul mul *);
+assignment_op!(MulAssign mul_assign *=);
+
+binary_op!(Div div /);
+assignment_op!(DivAssign div_assign /=);
+
+unary_op!(Neg neg -);
 
 #[cfg(test)]
 mod tests {
@@ -120,60 +288,199 @@ mod tests {
 
         #[test]
         fn test_neg() {
+            // Ref
             let v = Vec3 {e: [1.0, 2.0, 3.0]};
-            let v = -v;
+            assert!(ulps_eq!((-&v).x(), -1.0));
+            assert!(ulps_eq!((-&v).y(), -2.0));
+            assert!(ulps_eq!((-&v).z(), -3.0));
 
-            assert!(ulps_eq!(v.x(), -1.0));
-            assert!(ulps_eq!(v.y(), -2.0));
-            assert!(ulps_eq!(v.z(), -3.0));
+            // Value
+            let v = Vec3 {e: [1.0, 2.0, 3.0]};
+            assert!(ulps_eq!((-v).x(), -1.0));
+
+            let v = Vec3 {e: [1.0, 2.0, 3.0]};
+            assert!(ulps_eq!((-v).y(), -2.0));
+
+            let v = Vec3 {e: [1.0, 2.0, 3.0]};
+            assert!(ulps_eq!((-v).z(), -3.0));
         }
 
         #[test]
-        fn test_add_assign() {
+        fn test_op_macro_combinations() {
+            /* BINARY */
+            // Ref, Ref
+            let v1 = Vec3 {e: [1.0, 2.0, 3.0]};
+            let v2 = Vec3 {e: [1.0, 2.0, 3.0]};
+            let v_out = &v1 + &v2;
+            assert_eq!(v_out.x(), 2.0);
+            assert_eq!(v_out.y(), 4.0);
+            assert_eq!(v_out.z(), 6.0);
+
+            // Ref, Value
+            let v1 = Vec3 {e: [1.0, 2.0, 3.0]};
+            let v2 = Vec3 {e: [1.0, 2.0, 3.0]};
+            let v_out = &v1 + v2;
+            assert_eq!(v_out.x(), 2.0);
+            assert_eq!(v_out.y(), 4.0);
+            assert_eq!(v_out.z(), 6.0);
+
+            // Value, Ref
+            let v1 = Vec3 {e: [1.0, 2.0, 3.0]};
+            let v2 = Vec3 {e: [1.0, 2.0, 3.0]};
+            let v_out = v1 + &v2;
+            assert_eq!(v_out.x(), 2.0);
+            assert_eq!(v_out.y(), 4.0);
+            assert_eq!(v_out.z(), 6.0);
+
+            // Value, Value
+            let v1 = Vec3 {e: [1.0, 2.0, 3.0]};
+            let v2 = Vec3 {e: [1.0, 2.0, 3.0]};
+            let v_out = v1 + v2;
+            assert_eq!(v_out.x(), 2.0);
+            assert_eq!(v_out.y(), 4.0);
+            assert_eq!(v_out.z(), 6.0);
+
+            // Ref, Scalar
+            let v = Vec3 {e: [1.0, 2.0, 3.0]};
+            let s = 2.0;
+            let v_out = &v + s;
+            assert_eq!(v_out.x(), 3.0);
+            assert_eq!(v_out.y(), 4.0);
+            assert_eq!(v_out.z(), 5.0);
+
+            // Scalar, Ref
+            let v = Vec3 {e: [1.0, 2.0, 3.0]};
+            let s = 2.0;
+            let v_out = s + &v;
+            assert_eq!(v_out.x(), 3.0);
+            assert_eq!(v_out.y(), 4.0);
+            assert_eq!(v_out.z(), 5.0);
+
+            // Value Scalar
+            let v = Vec3 {e: [1.0, 2.0, 3.0]};
+            let s = 2.0;
+            let v_out = v + s;
+            assert_eq!(v_out.x(), 3.0);
+            assert_eq!(v_out.y(), 4.0);
+            assert_eq!(v_out.z(), 5.0);
+
+            // Scalar Value
+            let v = Vec3 {e: [1.0, 2.0, 3.0]};
+            let s = 2.0;
+            let v_out = s + v;
+            assert_eq!(v_out.x(), 3.0);
+            assert_eq!(v_out.y(), 4.0);
+            assert_eq!(v_out.z(), 5.0);
+
+            /* UNARY */
+            // Ref
+            let v = Vec3 {e: [1.0, 2.0, 3.0]};
+            assert!(ulps_eq!((-&v).x(), -1.0));
+            assert!(ulps_eq!((-&v).y(), -2.0));
+            assert!(ulps_eq!((-&v).z(), -3.0));
+
+            // Value
+            let v = Vec3 {e: [1.0, 2.0, 3.0]};
+            assert!(ulps_eq!((-v).x(), -1.0));
+
+            let v = Vec3 {e: [1.0, 2.0, 3.0]};
+            assert!(ulps_eq!((-v).y(), -2.0));
+
+            let v = Vec3 {e: [1.0, 2.0, 3.0]};
+            assert!(ulps_eq!((-v).z(), -3.0));
+
+            /* ASSIGNMENT */
+            // Ref
+
+            // Value
+
+            // Scalar
+        }
+
+        #[test]
+        fn test_add() {
+            // Binary op
+            let v1 = Vec3 {e: [1.0, 2.0, 3.0]};
+            let v2 = Vec3 {e: [1.0, 2.0, 3.0]};
+            let v_out = v1 + v2;
+            assert_eq!(v_out.x(), 2.0);
+            assert_eq!(v_out.y(), 4.0);
+            assert_eq!(v_out.z(), 6.0);
+
+            // Assignment
             let mut v1 = Vec3 {e: [1.0, 2.0, 3.0]};
             let v2 = Vec3 {e: [1.0, 2.0, 3.0]};
             v1 += v2;
-
             assert!(ulps_eq!(v1.x(), 2.0));
             assert!(ulps_eq!(v1.y(), 4.0));
             assert!(ulps_eq!(v1.z(), 6.0));
         }
 
         #[test]
-        fn test_sub_assign() {
+        fn test_sub() {
+            // Binary op
+            let v1 = Vec3 {e: [1.0, 2.0, 3.0]};
+            let v2 = Vec3 {e: [1.0, 2.0, 3.0]};
+            let v_out = v1 - v2;
+            assert_eq!(v_out.x(), 0.0);
+            assert_eq!(v_out.y(), 0.0);
+            assert_eq!(v_out.z(), 0.0);
+
+            // Assignment
             let mut v1 = Vec3 {e: [1.0, 2.0, 3.0]};
             let v2 = Vec3 {e: [1.0, 2.0, 3.0]};
             v1 -= v2;
-
             assert!(ulps_eq!(v1.x(), 0.0));
             assert!(ulps_eq!(v1.y(), 0.0));
             assert!(ulps_eq!(v1.z(), 0.0));
         }
 
         #[test]
-        fn test_mul_assign() {
-            let mut v = Vec3 {e: [1.0, 2.0, 3.0]};
-            v *= 2.0;
+        fn test_mul() {
+            // Binary op
+            let v1 = Vec3 {e: [1.0, 2.0, 3.0]};
+            let v2 = Vec3 {e: [1.0, 2.0, 3.0]};
+            let v_out = v1 * v2;
+            assert_eq!(v_out.x(), 1.0);
+            assert_eq!(v_out.y(), 4.0);
+            assert_eq!(v_out.z(), 9.0);
 
-            assert!(ulps_eq!(v.x(), 2.0));
-            assert!(ulps_eq!(v.y(), 4.0));
-            assert!(ulps_eq!(v.z(), 6.0));
+            // Assignment
+            let mut v1 = Vec3 {e: [1.0, 2.0, 3.0]};
+            let v2 = Vec3 {e: [1.0, 2.0, 3.0]};
+            v1 *= v2;
+            assert!(ulps_eq!(v1.x(), 1.0));
+            assert!(ulps_eq!(v1.y(), 4.0));
+            assert!(ulps_eq!(v1.z(), 9.0));
         }
 
         #[test]
-        fn test_div_assign() {
-            let mut v = Vec3 {e: [1.0, 2.0, 3.0]};
-            v /= 2.0;
+        fn test_div() {
+            // Binary op
+            let v1 = Vec3 {e: [1.0, 2.0, 3.0]};
+            let v2 = Vec3 {e: [1.0, 2.0, 3.0]};
+            let v_out = v1 / v2;
+            assert_eq!(v_out.x(), 1.0);
+            assert_eq!(v_out.y(), 1.0);
+            assert_eq!(v_out.z(), 1.0);
 
-            assert!(ulps_eq!(v.x(), 0.5));
-            assert!(ulps_eq!(v.y(), 1.0));
-            assert!(ulps_eq!(v.z(), 1.5));
+            // Assignment
+            let mut v1 = Vec3 {e: [1.0, 2.0, 3.0]};
+            let v2 = Vec3 {e: [1.0, 2.0, 3.0]};
+            v1 /= v2;
+            assert!(ulps_eq!(v1.x(), 1.0));
+            assert!(ulps_eq!(v1.y(), 1.0));
+            assert!(ulps_eq!(v1.z(), 1.0));
         }
 
         #[test]
         fn test_index() {
             let v = Vec3 {e: [1.0, 2.0, 3.0]};
+            assert!(ulps_eq!(v[0], 1.0));
+            assert!(ulps_eq!(v[1], 2.0));
+            assert!(ulps_eq!(v[2], 3.0));
 
+            let v = &v;
             assert!(ulps_eq!(v[0], 1.0));
             assert!(ulps_eq!(v[1], 2.0));
             assert!(ulps_eq!(v[2], 3.0));
