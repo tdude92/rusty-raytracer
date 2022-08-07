@@ -28,7 +28,7 @@ fn main() {
         for y in 0..image_height {
             let u = (x as f64) / ((image_width - 1) as f64);  // Percentage of width for current pixel
             let v = (y as f64) / ((image_height - 1) as f64); // Precentage of height for current pixel
-            let r = Ray::new(origin.clone(), &lower_left_corner + &horizontal*u + &vertical*v - &origin);
+            let r = Ray::new(origin, &lower_left_corner + &horizontal*u + &vertical*v - &origin);
 
             // Our coordinate system is right-handed and defines +y as up
             // While the Rust image crate is right-handed and defines +y as down

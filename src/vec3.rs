@@ -2,7 +2,7 @@ use std::ops;
 
 pub type Point3 = Vec3;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct Vec3 {
     e: [f64; 3],
 }

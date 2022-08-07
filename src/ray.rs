@@ -3,7 +3,7 @@ use image::Rgb;
 use crate::color::{Color, into_pixel};
 use crate::vec3::{Point3, Vec3};
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Ray {
     origin: Point3,
     dir: Vec3
@@ -12,8 +12,8 @@ pub struct Ray {
 impl Ray {
     pub fn new(origin: Point3, dir: Vec3) -> Self {
         Ray {
-            origin: origin,
-            dir: dir,
+            origin,
+            dir,
         }
     }
 
@@ -39,20 +39,5 @@ impl Ray {
         let unit_direction = self.dir().unit_vector();
         let t = 0.5*(unit_direction.y() + 1.0); // Normalize y to [0, 1]
         Rgb(into_pixel((1.0 - t)*Color::new(1.0, 1.0, 1.0) + t*Color::new(0.5, 0.7, 1.0)))
-    }
-
-    pub fn hit_sphere(&self, center: &Point3, radius: f64) -> f64 {
-        let oc = &self.origin - center;
-
-        let a = self.dir.length_squared();
-        let half_b = Vec3::dot(&self.dir, &oc);
-        let c = oc.length_squared() - radius*radius;
-
-        let discriminant = half_b*half_b - a*c;
-        if discriminant < 0.0 {
-            -1.0
-        } else {
-            (-half_b - discriminant.sqrt()) / a
-        }
     }
 }
