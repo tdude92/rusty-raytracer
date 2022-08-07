@@ -1,10 +1,19 @@
-use crate::hittable::{HitRecord, Hittable};
+use crate::hittable::{HitRecord, Hittable, into_opposing_normal};
 use crate::ray::Ray;
 use crate::vec3::{Point3, Vec3};
 
-struct Sphere {
+pub struct Sphere {
     center: Point3,
     radius: f64,
+}
+
+impl Sphere {
+    pub fn new(center: &Point3, radius: f64) -> Self {
+        Sphere {
+            center: center.clone(),
+            radius,
+        }
+    }
 }
 
 impl Hittable for Sphere {
@@ -32,10 +41,14 @@ impl Hittable for Sphere {
             }
 
             let hit_point = r.at(root);
+            let outward_normal = (hit_point - &self.center) / self.radius;
+            let (front_face, normal) = into_opposing_normal(r, outward_normal);
+
             Some(HitRecord{
                 p: hit_point,
-                normal: (hit_point - &self.center) / self.radius,
+                normal,
                 t: root,
+                front_face,
             })
         }
     }
