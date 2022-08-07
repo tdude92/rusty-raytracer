@@ -54,9 +54,7 @@ fn main() {
         }
 
         // Print progress on every 10th scanline
-        if (x + 1) % 10 == 0 {
-            println!("{}/{} scanlines rendered", x + 1, image_width);
-        }
+        println!("{}/{} scanlines rendered", x + 1, image_width);
     }
     img.save_with_format(output_file, output_file_format).unwrap();
 }
