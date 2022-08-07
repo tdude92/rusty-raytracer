@@ -38,3 +38,9 @@ impl Hittable for HittableList {
         nearest_hit
     }
 }
+
+impl Default for HittableList {
+    fn default() -> Self {
+        Self::new()
+    }
+}

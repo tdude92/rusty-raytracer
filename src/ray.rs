@@ -1,9 +1,7 @@
 use std::rc::Rc;
 
-use image::Rgb;
-
 use crate::INFINITY;
-use crate::color::{Color, into_pixel};
+use crate::color::Color;
 use crate::vec3::{Point3, Vec3};
 use crate::hittable::Hittable;
 
@@ -30,16 +28,16 @@ impl Ray {
     }
 
     pub fn at(&self, t: f64) -> Point3 {
-        &self.origin + t * &self.dir
+        self.origin + t * self.dir
     }
 
-    pub fn color(&self, world: &Rc<dyn Hittable>) -> Rgb<u8> {
+    pub fn color(&self, world: &Rc<dyn Hittable>) -> Color {
         if let Some(hit_record) = world.hit(self, 0.0, INFINITY) {
-            return Rgb(into_pixel(0.5*(hit_record.normal + 1.0)));
+            return 0.5*(hit_record.normal + 1.0);
         }
 
         let unit_direction = self.dir.unit_vector();
         let t = 0.5*(unit_direction.y() + 1.0); // Normalize y to [0, 1]
-        Rgb(into_pixel((1.0 - t)*Color::new(1.0, 1.0, 1.0) + t*Color::new(0.5, 0.7, 1.0)))
+        (1.0 - t)*Color::new(1.0, 1.0, 1.0) + t*Color::new(0.5, 0.7, 1.0)
     }
 }

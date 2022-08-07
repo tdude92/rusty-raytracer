@@ -8,9 +8,9 @@ pub struct Sphere {
 }
 
 impl Sphere {
-    pub fn new(center: &Point3, radius: f64) -> Self {
+    pub fn new(center: Point3, radius: f64) -> Self {
         Sphere {
-            center: center.clone(),
+            center,
             radius,
         }
     }
@@ -18,11 +18,11 @@ impl Sphere {
 
 impl Hittable for Sphere {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
-        let oc = r.origin() - &self.center;
+        let oc = r.origin() - self.center;
 
         let a = r.dir().length_squared();
         let half_b = Vec3::dot(r.dir(), &oc);
-        let c = oc.length_squared() - (&self.radius)*(&self.radius);
+        let c = oc.length_squared() - self.radius*self.radius;
 
         let discriminant = half_b*half_b - a*c;
         if discriminant < 0.0 {
@@ -41,7 +41,7 @@ impl Hittable for Sphere {
             }
 
             let hit_point = r.at(root);
-            let outward_normal = (hit_point - &self.center) / self.radius;
+            let outward_normal = (hit_point - self.center) / self.radius;
             let (front_face, normal) = into_opposing_normal(r, outward_normal);
 
             Some(HitRecord{
