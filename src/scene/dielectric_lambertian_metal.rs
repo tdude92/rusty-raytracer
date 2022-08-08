@@ -12,7 +12,9 @@ pub fn get_scene() -> Scene {
     let image_width: u32 = 400;
 
     // Camera config
-    let vfov: f64 = 90.0;
+    let lookfrom: Point3 = Point3::new(-2.0, 2.0, 1.0);
+    let lookat: Point3 = Point3::new(0.0, 0.0, -1.0);
+    let vfov: f64 = 20.0;
 
     // Raytracer config
     let samples_per_pixel: u32 = 100;
@@ -27,10 +29,10 @@ pub fn get_scene() -> Scene {
     // World creation
     let mut world = HittableList::new();
     let ground_sphere:  Rc<dyn Hittable> = Rc::new(Sphere::new(Point3::new( 0.0, -100.5, -1.0), 100.0, &material_ground));
-    let sphere1:        Rc<dyn Hittable> = Rc::new(Sphere::new(Point3::new( 0.0,  0.0,   -1.0), 0.5, &material_center));
-    let sphere2_outer:  Rc<dyn Hittable> = Rc::new(Sphere::new(Point3::new(-1.0,  0.0,   -1.0), 0.5, &material_left));
-    let sphere2_inner:  Rc<dyn Hittable> = Rc::new(Sphere::new(Point3::new(-1.0,  0.0,   -1.0), -0.4, &material_left));
-    let sphere3:        Rc<dyn Hittable> = Rc::new(Sphere::new(Point3::new( 1.0,  0.0,   -1.0), 0.5, &material_right));
+    let sphere1:        Rc<dyn Hittable> = Rc::new(Sphere::new(Point3::new( 0.0,    0.0, -1.0),   0.5, &material_center));
+    let sphere2_outer:  Rc<dyn Hittable> = Rc::new(Sphere::new(Point3::new(-1.0,    0.0, -1.0),   0.5, &material_left));
+    let sphere2_inner:  Rc<dyn Hittable> = Rc::new(Sphere::new(Point3::new(-1.0,    0.0, -1.0), -0.45, &material_left));
+    let sphere3:        Rc<dyn Hittable> = Rc::new(Sphere::new(Point3::new( 1.0,    0.0, -1.0),   0.5, &material_right));
 
     world.add(&ground_sphere);
     world.add(&sphere1);
@@ -46,6 +48,8 @@ pub fn get_scene() -> Scene {
         image_width,
         samples_per_pixel,
         recursion_depth,
+        lookfrom,
+        lookat,
         vfov,
         world,
     )

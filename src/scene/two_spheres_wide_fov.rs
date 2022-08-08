@@ -13,6 +13,8 @@ pub fn get_scene() -> Scene {
     let image_width: u32 = 400;
 
     // Camera config
+    let lookfrom: Point3 = Point3::new(0.0, 0.0, 0.0);
+    let lookat: Point3 = Point3::new(0.0, 0.0, -1.0);
     let vfov: f64 = 90.0;
 
     // Raytracer config
@@ -40,6 +42,8 @@ pub fn get_scene() -> Scene {
         image_width,
         samples_per_pixel,
         recursion_depth,
+        lookfrom,
+        lookat,
         vfov,
         world,
     )

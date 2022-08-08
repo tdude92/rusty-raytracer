@@ -9,7 +9,7 @@ fn main() {
     let output_file_format = ImageFormat::Png;
 
     // Load a scene
-    let scene = rusty_raytracer::scene::two_spheres_wide_fov::get_scene();
+    let scene = rusty_raytracer::scene::dielectric_lambertian_metal::get_scene();
 
     // Pull relevant data out of the Scene object
     let image_width = scene.image_width;

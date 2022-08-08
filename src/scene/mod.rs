@@ -4,7 +4,9 @@ pub mod two_spheres_wide_fov;
 
 use std::rc::Rc;
 
-use crate::{camera::Camera, hittable::Hittable};
+use crate::camera::Camera;
+use crate::hittable::Hittable;
+use crate::vec3::{Point3, Vec3};
 
 pub struct Scene {
     pub aspect_ratio: f64,
@@ -22,6 +24,8 @@ impl Scene {
         image_width: u32,
         samples_per_pixel: u32,
         recursion_depth: u32,
+        lookfrom: Point3,
+        lookat: Point3,
         vfov: f64,
         world: Rc<dyn Hittable>,
     ) -> Self {
@@ -32,6 +36,9 @@ impl Scene {
             samples_per_pixel,
             recursion_depth,
             cam: Camera::new(
+                lookfrom,
+                lookat,
+                Vec3::new(0.0, 1.0, 0.0),
                 vfov,
                 aspect_ratio,
             ),
