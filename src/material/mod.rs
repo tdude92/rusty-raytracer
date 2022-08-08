@@ -1,7 +1,9 @@
+pub mod dielectric;
 pub mod lambertian;
 pub mod metal;
 
 // Re-export structs that implement Material
+pub use dielectric::Dielectric;
 pub use lambertian::Lambertian;
 pub use metal::Metal;
 

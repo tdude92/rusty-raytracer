@@ -40,9 +40,18 @@ impl Vec3 {
         Self::random_in_unit_sphere().unit_vector()
     }
 
-    ///Reflects the current vector across a normal unit vector n
+    /// Reflects the current vector across a normal unit vector n
     pub fn reflect(&self, n: &Self) -> Self {
         self - 2.0*Self::dot(self, n)*n
+    }
+
+    /// Refracts vector across a normal unit vector n
+    /// with a ratio of refractive index ratio eta_i / eta_t
+    pub fn refract(&self, n: &Vec3, eta_ratio: f64) -> Self {
+        let cos_theta = Self::dot(&(-self), n).min(1.0);
+        let r_out_perpendicular = eta_ratio * (self + cos_theta*n);
+        let r_out_parallel = -(1.0 - r_out_perpendicular.length_squared()).abs().sqrt()*n;
+        r_out_perpendicular + r_out_parallel
     }
 
     pub fn unit_vector(&self) -> Self {
