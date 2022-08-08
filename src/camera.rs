@@ -9,9 +9,15 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new() -> Self {
-        let aspect_ratio = 16.0/9.0;
-        let viewport_height = 2.0;
+    pub fn new(
+        vfov: f64,  // Vertical field-of-view in degrees
+        aspect_ratio: f64,
+    ) -> Self {
+        let aspect_ratio = aspect_ratio;
+        let vfov = vfov.to_radians();
+        let h = (vfov/2.0).tan();
+
+        let viewport_height = 2.0*h;
         let viewport_width = aspect_ratio*viewport_height;
         let focal_length = 1.0;
 
@@ -31,11 +37,5 @@ impl Camera {
     pub fn get_ray(&self, u: f64, v: f64) -> Ray {
         // u and v are in [0, 1]
         Ray::new(self.origin, self.lower_left_corner + self.horizontal*u + self.vertical*v - self.origin)
-    }
-}
-
-impl Default for Camera {
-    fn default() -> Self {
-        Self::new()
     }
 }

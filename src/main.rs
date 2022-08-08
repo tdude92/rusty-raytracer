@@ -1,51 +1,23 @@
-use std::rc::Rc;
-
 use image::{ImageFormat, RgbImage};
 
-use rusty_raytracer::material::{Lambertian, Metal, Material, Dielectric};
 use rusty_raytracer::{write_pixel, random_f64};
-use rusty_raytracer::camera::Camera;
 use rusty_raytracer::color::Color;
-use rusty_raytracer::hittable::{Hittable, HittableList, Sphere};
-use rusty_raytracer::vec3::{Point3};
 
 fn main() {
     // Basic config
     let output_file: &str = "output.png";
     let output_file_format = ImageFormat::Png;
 
-    // Image config
-    let aspect_ratio = 16.0/9.0;
-    let image_width: u32 = 400;
-    let image_height: u32 = ((image_width as f64) / aspect_ratio) as u32;
-    let samples_per_pixel: u32 = 100;
-    let recursion_depth: u32 = 50;
+    // Load a scene
+    let scene = rusty_raytracer::scene::two_spheres_wide_fov::get_scene();
 
-    // Materials
-    let material_ground: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.8, 0.8, 0.0)));
-    let material_center: Rc<dyn Material> = Rc::new(Lambertian::new(Color::new(0.1, 0.2, 0.5)));
-    let material_left:   Rc<dyn Material> = Rc::new(Dielectric::new(1.5));
-    let material_right:  Rc<dyn Material> = Rc::new(Metal::new(Color::new(0.8, 0.6, 0.2), 0.0));
-
-    // World
-    let mut world = HittableList::new();
-    let ground_sphere:  Rc<dyn Hittable> = Rc::new(Sphere::new(Point3::new( 0.0, -100.5, -1.0), 100.0, &material_ground));
-    let sphere1:        Rc<dyn Hittable> = Rc::new(Sphere::new(Point3::new( 0.0,  0.0,   -1.0), 0.5, &material_center));
-    let sphere2_outer:  Rc<dyn Hittable> = Rc::new(Sphere::new(Point3::new(-1.0,  0.0,   -1.0), 0.5, &material_left));
-    let sphere2_inner:  Rc<dyn Hittable> = Rc::new(Sphere::new(Point3::new(-1.0,  0.0,   -1.0), -0.4, &material_left));
-    let sphere3:        Rc<dyn Hittable> = Rc::new(Sphere::new(Point3::new( 1.0,  0.0,   -1.0), 0.5, &material_right));
-
-    world.add(&ground_sphere);
-    world.add(&sphere1);
-    world.add(&sphere2_outer);
-    world.add(&sphere2_inner);
-    world.add(&sphere3);
-
-    // world is frozen as an Rc<dyn Hittable> until the render loop is over
-    let world: Rc<dyn Hittable> = Rc::new(world);
-
-    // Camera
-    let cam = Camera::new();
+    // Pull relevant data out of the Scene object
+    let image_width = scene.image_width;
+    let image_height = scene.image_height;
+    let samples_per_pixel = scene.samples_per_pixel;
+    let recursion_depth = scene.recursion_depth;
+    let cam = scene.cam;
+    let world = scene.world;
 
     // Render
     let mut img = RgbImage::new(image_width, image_height);
