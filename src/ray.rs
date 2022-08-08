@@ -31,9 +31,17 @@ impl Ray {
         self.origin + t * self.dir
     }
 
-    pub fn color(&self, world: &Rc<dyn Hittable>) -> Color {
-        if let Some(hit_record) = world.hit(self, 0.0, INFINITY) {
-            return 0.5*(hit_record.normal + 1.0);
+    pub fn color(&self, world: &Rc<dyn Hittable>, recursion_depth: u32) -> Color {
+        if recursion_depth <= 0 {
+            return Color::new(0.0, 0.0, 0.0);
+        }
+
+        // t_min is 0.001 to avoid floating point error causing a hit to be recorded at the ray origin
+        // fixes shadow acne
+        if let Some(hit_record) = world.hit(self, 0.001, INFINITY) {
+            if let Some((attenuation, scattered)) = hit_record.material().scatter(self, &hit_record) {
+                return attenuation*scattered.color(world, recursion_depth - 1);
+            }
         }
 
         let unit_direction = self.dir.unit_vector();

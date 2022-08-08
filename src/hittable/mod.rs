@@ -5,6 +5,8 @@ pub mod sphere;
 pub use sphere::Sphere;
 pub use hittable_list::HittableList;
 
+use std::rc::Rc;
+use crate::material::Material;
 use crate::ray::Ray;
 use crate::vec3::{Point3, Vec3};
 
@@ -20,10 +22,17 @@ pub fn into_opposing_normal(r: &Ray, outward_normal: Vec3) -> (bool, Vec3) {
 }
 
 pub struct HitRecord {
-    pub p: Point3,
-    pub normal: Vec3,
+    p: Point3,
+    normal: Vec3,
+    material: Rc<dyn Material>,
     pub t: f64,
     pub front_face: bool,
+}
+
+impl HitRecord {
+    pub fn p(&self) -> &Point3 {&self.p}
+    pub fn normal(&self) -> &Vec3 {&self.normal}
+    pub fn material(&self) -> &Rc<dyn Material> {&self.material}
 }
 
 pub trait Hittable {

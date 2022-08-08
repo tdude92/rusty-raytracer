@@ -1,6 +1,7 @@
 pub mod camera;
 pub mod color;
 pub mod hittable;
+pub mod material;
 pub mod ray;
 pub mod vec3;
 
@@ -18,6 +19,14 @@ use color::{Color, into_pixel};
 /// Writes a pixel into img
 pub fn write_pixel(img: &mut RgbImage, pixel_color: &Color, x: u32, y: u32, n_samples: u32) {
     let pixel_color = pixel_color / (n_samples as f64);
+
+    // Gamma correction (raise to the power of 1/gamma for gamma = 2.0)
+    let pixel_color = Color::new(
+        pixel_color.x().sqrt(),
+        pixel_color.y().sqrt(),
+        pixel_color.z().sqrt(),
+    );
+
     img.put_pixel(x, y, into_pixel(&pixel_color));
 }
 

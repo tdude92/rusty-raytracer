@@ -1,5 +1,7 @@
 use std::ops;
 
+use crate::{random_f64, random_f64_in};
+
 pub type Point3 = Vec3;
 
 #[derive(Debug, Clone, Copy)]
@@ -12,6 +14,35 @@ impl Vec3 {
         Vec3 {
             e: [x, y, z]
         }
+    }
+
+    pub fn random() -> Self {
+        Self::new(random_f64(), random_f64(), random_f64())
+    }
+
+    /// Generates random vector with component values in [min, max)
+    pub fn random_in(min: f64, max: f64) -> Self {
+        Self::new(random_f64_in(min, max), random_f64_in(min, max), random_f64_in(min, max))
+    }
+
+    /// Returns random vector within the unit sphere
+    /// ie. length of the vector is less than 1.0
+    pub fn random_in_unit_sphere() -> Self {
+        loop {
+            let p = Self::random_in(-1.0, 1.0);
+            if p.length_squared() < 1.0 {
+                return p;
+            }
+        }
+    }
+
+    pub fn random_unit_vector() -> Self {
+        Self::random_in_unit_sphere().unit_vector()
+    }
+
+    ///Reflects the current vector across a normal unit vector n
+    pub fn reflect(&self, n: &Self) -> Self {
+        self - 2.0*Self::dot(self, n)*n
     }
 
     pub fn unit_vector(&self) -> Self {
@@ -50,6 +81,15 @@ impl Vec3 {
 
     pub fn length_squared(&self) -> f64 {
         self.e[0]*self.e[0] + self.e[1]*self.e[1] + self.e[2]*self.e[2]
+    }
+
+    /// Returns true if this vector is approximately a zero vector
+    pub fn is_near_zero(&self) -> bool {
+        let epsilon: f64 = 1e-8;
+
+        (self.e[0].abs() < epsilon) &&
+        (self.e[1].abs() < epsilon) &&
+        (self.e[2].abs() < epsilon)
     }
 }
 
