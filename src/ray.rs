@@ -39,8 +39,13 @@ impl Ray {
         // t_min is 0.001 to avoid floating point error causing a hit to be recorded at the ray origin
         // fixes shadow acne
         if let Some(hit_record) = world.hit(self, 0.001, INFINITY) {
-            if let Some((attenuation, scattered)) = hit_record.material().scatter(self, &hit_record) {
-                return attenuation*scattered.color(world, recursion_depth - 1);
+            match hit_record.material().scatter(self, &hit_record) {
+                Some((attenuation, scattered)) => {
+                    return attenuation*scattered.color(world, recursion_depth - 1);
+                },
+                None => {
+                    return Color::new(0.0, 0.0, 0.0);
+                },
             }
         }
 
