@@ -36,8 +36,6 @@ fn main() {
             // So we need to flip the y coordinates.
             write_pixel(&mut img, &pixel_color, x, image_height - y - 1, samples_per_pixel);
         }
-
-        // Print progress on every 10th scanline
         println!("{}/{} scanlines rendered", x + 1, image_width);
     }
     img.save_with_format(output_file, output_file_format).unwrap();
