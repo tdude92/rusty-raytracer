@@ -14,10 +14,10 @@ pub fn get_scene() -> Scene {
     // Camera config
     let lookfrom: Point3 = Point3::new(-2.0, 2.0, 1.0);
     let lookat: Point3 = Point3::new(0.0, 0.0, -1.0);
-    let vfov: f64 = 20.0;
+    let vfov: f64 = 30.0;
 
     // Raytracer config
-    let samples_per_pixel: u32 = 100;
+    let samples_per_pixel: u32 = 500;
     let recursion_depth: u32 = 50;
 
     // Materials
