@@ -16,6 +16,8 @@ pub fn get_scene() -> Scene {
     let lookfrom: Point3 = Point3::new(0.0, 0.0, 0.0);
     let lookat: Point3 = Point3::new(0.0, 0.0, -1.0);
     let vfov: f64 = 90.0;
+    let aperture_width: f64 = 0.0;
+    let focus_distance: f64 = 1.0;
 
     // Raytracer config
     let samples_per_pixel: u32 = 100;
@@ -45,6 +47,8 @@ pub fn get_scene() -> Scene {
         lookfrom,
         lookat,
         vfov,
+        aperture_width,
+        focus_distance,
         world,
     )
 }

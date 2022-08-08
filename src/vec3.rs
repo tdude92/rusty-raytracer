@@ -36,6 +36,17 @@ impl Vec3 {
         }
     }
 
+    /// Returns a random vector within the unit disc
+    /// lying on the xy-plane
+    pub fn random_in_unit_disc() -> Self {
+        loop {
+            let p = Self::new(random_f64_in(-1.0, 1.0), random_f64_in(-1.0, 1.0), 0.0);
+            if p.length_squared() < 1.0 {
+                return p;
+            }
+        }
+    }
+
     pub fn random_unit_vector() -> Self {
         Self::random_in_unit_sphere().unit_vector()
     }

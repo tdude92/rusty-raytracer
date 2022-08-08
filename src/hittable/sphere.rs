@@ -19,6 +19,14 @@ impl Sphere {
             material: Rc::clone(material),
         }
     }
+
+    pub fn center(&self) -> &Point3 {
+        &self.center
+    }
+
+    pub fn radius(&self) -> f64 {
+        self.radius
+    }
 }
 
 impl Hittable for Sphere {

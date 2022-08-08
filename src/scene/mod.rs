@@ -1,5 +1,6 @@
-pub mod lonely_sphere;
 pub mod dielectric_lambertian_metal;
+pub mod lonely_sphere;
+pub mod lots_of_random_spheres;
 pub mod two_spheres_wide_fov;
 
 use std::rc::Rc;
@@ -27,6 +28,8 @@ impl Scene {
         lookfrom: Point3,
         lookat: Point3,
         vfov: f64,
+        aperture_width: f64,
+        focus_distance: f64,
         world: Rc<dyn Hittable>,
     ) -> Self {
         Self {
@@ -41,6 +44,8 @@ impl Scene {
                 Vec3::new(0.0, 1.0, 0.0),
                 vfov,
                 aspect_ratio,
+                aperture_width,
+                focus_distance,
             ),
             world,
         }
